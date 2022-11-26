@@ -1,0 +1,36 @@
+@startuml
+
+hide empty description
+
+title Deployment State Model
+[*] -> dispatched
+
+dispatched --> received
+dispatched --> unreceived
+
+received --> no_attempt
+received --> attempt
+
+state "System Dispatched" as dispatched
+state "System Received" as received
+state "System Not Received" as unreceived
+state "Setup Attempted" as attempt
+state "Setup Not Attempted" as no_attempt
+
+state "System Deployed" as sysstate {
+  state "Not Functional Setup" as fail
+  state "Sub-optimal Setup" as partial
+  state "Optimal Setup" as success
+  success --> partial : System Degrades
+  success --> fail
+  partial --> fail
+}
+
+attempt --> success
+attempt --> partial 
+attempt --> fail
+
+partial --> attempt : Re-setup attempted
+fail --> attempt : Re-setup attempted
+
+@enduml
